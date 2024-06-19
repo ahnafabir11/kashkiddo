@@ -11,6 +11,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kashkiddo.vercel.app"),
   title: {
     default: "KashKiddo",
     template: "%s | KashKiddo",
