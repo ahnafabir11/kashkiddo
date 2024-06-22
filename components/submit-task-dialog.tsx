@@ -1,36 +1,38 @@
 "use client";
+
 import {
   Dialog,
   DialogClose,
-  DialogContent,
-  DialogDescription,
+  DialogTitle,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogContent,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
-import { submitTask } from "@/lib/actions/task";
-import { getErrorMessage } from "@/lib/handle-error";
-import { useUploadFile } from "@/lib/hooks/use-upload-file";
+import {
+  Form,
+  FormItem,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   TaskSubmissionType,
   taskSubmissionSchema,
 } from "@/lib/validations/tasks";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { fireworks } from "@/lib/confetti";
 import { FileUploader } from "./file-uploader";
-import { Button } from "./ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import { Textarea } from "./ui/textarea";
+import { submitTask } from "@/lib/actions/task";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { getErrorMessage } from "@/lib/handle-error";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useUploadFile } from "@/lib/hooks/use-upload-file";
 
 interface SubmitTaskDialogProps {
   userId: string;
@@ -70,6 +72,7 @@ export default function SubmitTaskDialog({
         form.reset();
         setOpen(false);
         setLoading(false);
+        fireworks();
         return "Task Submitted";
       },
       error: (err) => {

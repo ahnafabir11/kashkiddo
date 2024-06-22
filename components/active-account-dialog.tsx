@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -9,9 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { createActivationRequest } from "@/lib/actions/user";
-import { useState } from "react";
 import {
   Form,
   FormControl,
@@ -19,14 +16,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+} from "@/components/ui/form";
 import {
   ActiveAccountFormType,
   activeAccountFormSchema,
 } from "@/lib/validations/account";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { fireworks } from "@/lib/confetti";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { activationCharge } from "@/lib/constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createActivationRequest } from "@/lib/actions/user";
 
 interface ActiveAccountDialogProps {
   userId: string;
@@ -50,6 +52,7 @@ export default function ActiveAccountDialog({
     form.reset();
     setOpen(false);
     setLoading(false);
+    fireworks();
   }
 
   return (
@@ -64,7 +67,7 @@ export default function ActiveAccountDialog({
         <DialogHeader>
           <DialogTitle>Active your account</DialogTitle>
           <DialogDescription>
-            Bkash send money on 01775390977 ({activationCharge}TK)
+            bKash/Nagad send money on 01775390977 ({activationCharge}TK)
           </DialogDescription>
         </DialogHeader>
 

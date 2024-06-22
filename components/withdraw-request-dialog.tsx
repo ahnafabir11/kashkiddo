@@ -27,9 +27,10 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
+import { fireworks } from "@/lib/confetti";
+import { minWithdrawAmmount } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createWithdrawRequest } from "@/lib/actions/payment";
-import { minWithdrawAmmount } from "@/lib/constants";
 
 export interface WithdrawRequestDialogProps {
   userId: string;
@@ -67,6 +68,7 @@ export default function WithdrawRequestDialog({
     form.reset();
     setOpen(false);
     setLoading(false);
+    fireworks();
   }
 
   return (
@@ -118,6 +120,9 @@ export default function WithdrawRequestDialog({
                     <Input placeholder="01885365975" {...field} />
                   </FormControl>
                   <FormMessage />
+                  <FormDescription>
+                    Any bKash or Nagad number (Personal)
+                  </FormDescription>
                 </FormItem>
               )}
             />

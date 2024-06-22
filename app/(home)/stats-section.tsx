@@ -1,4 +1,6 @@
 import prisma from "@/lib/db";
+import NumberTicker from "@/components/magicui/number-ticker";
+import LetterPullup from "@/components/magicui/letter-pullup";
 
 export default async function StatsSection() {
   const fakeUserCount = await prisma.user.count();
@@ -27,7 +29,7 @@ export default async function StatsSection() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-primary md:text-5xl">
-                {userCount}
+                <NumberTicker value={userCount} />
               </dd>
             </div>
 
@@ -36,8 +38,8 @@ export default async function StatsSection() {
                 Daily Income limit
               </dt>
 
-              <dd className="text-4xl font-extrabold text-primary md:text-5xl">
-                100
+              <dd className="text-4xl font-extrabold text-primary md:text-5xl uppercase">
+                <LetterPullup words={"unlimited"} />
               </dd>
             </div>
 
@@ -47,7 +49,7 @@ export default async function StatsSection() {
               </dt>
 
               <dd className="text-4xl font-extrabold text-primary md:text-5xl">
-                2
+                <NumberTicker value={2} />
               </dd>
             </div>
           </dl>
