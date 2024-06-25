@@ -1,15 +1,16 @@
 "use client";
 
 import {
-  Dialog,
-  DialogClose,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
-  DialogTrigger,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaClose,
+  CredenzaTitle,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaContent,
+  CredenzaTrigger,
+  CredenzaDescription,
+} from "@/components/ui/credenza";
 import {
   Form,
   FormItem,
@@ -83,78 +84,85 @@ export default function SubmitTaskDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className={className}>
-        <Button>Submit Task</Button>
-      </DialogTrigger>
+    <Credenza open={open} onOpenChange={setOpen}>
+      <CredenzaTrigger asChild>
+        <Button className={className}>Submit Task</Button>
+      </CredenzaTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Submit Task</DialogTitle>
-          <DialogDescription>
+      <CredenzaContent className="md:max-w-[425px]">
+        <CredenzaHeader>
+          <CredenzaTitle>Submit Task</CredenzaTitle>
+          <CredenzaDescription>
             This action cannot be undone. Please read the task description and
             properly submit your task otherwise your submission will not be
             valid.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="screenshots"
-              render={({ field }) => (
-                <div className="space-y-6">
-                  <FormItem className="w-full">
-                    <FormLabel>Images</FormLabel>
+        <CredenzaBody>
+          <Form {...form}>
+            <form
+              className="grid gap-4"
+              id="task-submission-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="screenshots"
+                render={({ field }) => (
+                  <div className="space-y-6">
+                    <FormItem className="w-full">
+                      <FormLabel>Images</FormLabel>
+                      <FormControl>
+                        <FileUploader
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          maxFiles={4}
+                          maxSize={4 * 1024 * 1024}
+                          progresses={progresses}
+                          // pass the onUpload function here for direct upload
+                          // onUpload={uploadFiles}
+                          disabled={isUploading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </div>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                      <FileUploader
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        maxFiles={4}
-                        maxSize={4 * 1024 * 1024}
-                        progresses={progresses}
-                        // pass the onUpload function here for direct upload
-                        // onUpload={uploadFiles}
-                        disabled={isUploading}
+                      <Textarea
+                        placeholder="Do you want to say any thing about task?"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                </div>
-              )}
-            />
+                )}
+              />
+            </form>
+          </Form>
+        </CredenzaBody>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Do you want to say any thing about task?"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <CredenzaFooter>
+          <CredenzaClose asChild>
+            <Button type="button" variant="secondary" disabled={loading}>
+              Close
+            </Button>
+          </CredenzaClose>
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button disabled={loading} type="button" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
-              <Button disabled={loading} type="submit">
-                Submit
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <Button form="task-submission-form" type="submit" disabled={loading}>
+            Submit
+          </Button>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

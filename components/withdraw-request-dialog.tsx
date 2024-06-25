@@ -1,14 +1,16 @@
 "use client";
 
 import {
-  Dialog,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
-  DialogTrigger,
-  DialogDescription,
-} from "./ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaClose,
+  CredenzaTitle,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaContent,
+  CredenzaTrigger,
+  CredenzaDescription,
+} from "@/components/ui/credenza";
 import {
   Form,
   FormItem,
@@ -17,17 +19,17 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from "./ui/form";
+} from "@/components/ui/form";
 import {
   WithdrawFormType,
   withdrawFormSchema,
 } from "@/lib/validations/account";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { fireworks } from "@/lib/confetti";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { minWithdrawAmmount } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createWithdrawRequest } from "@/lib/actions/payment";
@@ -72,69 +74,76 @@ export default function WithdrawRequestDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className={className}>
-          Withdraw Request
-        </Button>
-      </DialogTrigger>
+    <Credenza open={open} onOpenChange={setOpen}>
+      <CredenzaTrigger asChild>
+        <Button className={className}>Withdraw Request</Button>
+      </CredenzaTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Withdraw Request</DialogTitle>
-          <DialogDescription>
+      <CredenzaContent className="md:max-w-[425px]">
+        <CredenzaHeader>
+          <CredenzaTitle>Withdraw Request</CredenzaTitle>
+          <CredenzaDescription>
             It will take up to 24 hours to approve your request.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <Form {...form}>
-          <form
-            noValidate
-            className="grid gap-4"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    Minimum amount is {minWithdrawAmmount} TK.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+        <CredenzaBody>
+          <Form {...form}>
+            <form
+              noValidate
+              className="grid gap-4"
+              id="withdraw-request-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input placeholder="1000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>
+                      Minimum amount is {minWithdrawAmmount} TK.
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="01885365975" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    Any bKash or Nagad number (Personal)
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="01885365975" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>
+                      Any bKash or Nagad number (Personal)
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </CredenzaBody>
 
-            <DialogFooter>
-              <Button type="submit" disabled={loading}>
-                Send Request
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+        <CredenzaFooter>
+          <CredenzaClose asChild>
+            <Button type="button" variant="secondary" disabled={loading}>
+              Close
+            </Button>
+          </CredenzaClose>
+
+          <Button form="withdraw-request-form" type="submit" disabled={loading}>
+            Send Request
+          </Button>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }
