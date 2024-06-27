@@ -1,15 +1,15 @@
-import ReferButton from "@/components/refer-button";
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import TableToolbar from "../users/table-toolbar";
 import { Badge } from "@/components/ui/badge";
+import ReferButton from "@/components/refer-button";
+import TableToolbar from "@/components/table-toolbar";
 
 export default async function UserView({
   referredById,

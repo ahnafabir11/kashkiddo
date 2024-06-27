@@ -13,8 +13,8 @@ import { referralBonus } from "@/lib/constants";
 import { auth, signIn, signOut } from "@/lib/auth";
 import { getServerActionError } from "@/lib/handle-error";
 import { ActiveAccountFormType } from "@/lib/validations/account";
-import { StatusDropdownProps } from "@/app/dashboard/users/status-dropdown";
-import { ActivationStatusDropdownProps } from "@/app/dashboard/activations/activation-status-dropdown";
+import { ActiveStatusDropdownProps } from "@/app/dashboard/users/active-status-dropdown";
+import { ActiveRequestStatusDropdownProps } from "@/app/dashboard/activations/active-request-status-dropdown";
 
 export async function signupNewUser(data: SignupFormType) {
   try {
@@ -107,49 +107,30 @@ export async function createActivationRequest(data: ActiveAccountFormType) {
   }
 }
 
-export async function handleUpdateActivationStatus({
-  value,
-  requestId,
-}: ActivationStatusDropdownProps) {
-  try {
-    const session = await auth();
-    if (!session || !session.user || session.user.role !== "ADMIN") {
-      throw new Error("Unauthorized");
-    }
-
-    await prisma.activation.update({
-      where: { id: requestId },
-      data: { complete: !value },
-    });
-
-    revalidatePath("/dashboard/activations");
-  } catch (error) {
-    throw getServerActionError(error);
-  }
-}
-
-export async function handleUpdateStatus({
-  type,
-  value,
+export async function updateUserActiveStatus({
+  status,
   userId,
-}: StatusDropdownProps) {
+}: ActiveStatusDropdownProps) {
   try {
     const session = await auth();
     if (!session || !session.user || session.user.role !== "ADMIN") {
       throw new Error("Unauthorized");
     }
 
-    const upatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id: userId },
-      include: { referredBy: { include: { referredBy: true } } },
-      data: type === "active" ? { active: !value } : { verified: !value },
+      data: { active: !status },
     });
 
-    if (upatedUser.referredBy?.id) {
-      const referredByUser = upatedUser.referredBy;
+    // Checking if user is referred by someone
+    const referral = await prisma.referral.findUnique({
+      where: { referredToId: userId },
+    });
 
+    if (referral) {
+      // Sending refer bonus to the referred by user
       await prisma.user.update({
-        where: { id: referredByUser.referredById },
+        where: { id: referral.referredById },
         data: { balance: { increment: referralBonus } },
       });
 
@@ -158,12 +139,37 @@ export async function handleUpdateStatus({
           type: "INCOME",
           reason: "REFERRAL",
           amount: referralBonus,
-          user: { connect: { id: referredByUser.referredById } },
+          user: { connect: { id: referral.referredById } },
         },
       });
     }
 
     revalidatePath("/dashboard/users");
+
+    return { success: true, message: "User Active Status Updated" };
+  } catch (error) {
+    throw getServerActionError(error);
+  }
+}
+
+export async function updateActiveRequestStatus({
+  status,
+  requestId,
+}: ActiveRequestStatusDropdownProps) {
+  try {
+    const session = await auth();
+    if (!session || !session.user || session.user.role !== "ADMIN") {
+      throw new Error("Unauthorized");
+    }
+
+    await prisma.activation.update({
+      where: { id: requestId },
+      data: { complete: !status },
+    });
+
+    revalidatePath("/dashboard/activations");
+
+    return { success: true, message: "Active Request Status Updated" };
   } catch (error) {
     throw getServerActionError(error);
   }

@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import StatusDropdown from "./status-dropdown";
-import TableToolbar from "./table-toolbar";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
+import StatusDropdown from "./active-status-dropdown";
+import TableToolbar from "@/components/table-toolbar";
 
 export default async function page({
   searchParams,
@@ -60,18 +60,10 @@ export default async function page({
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <StatusDropdown
-                    type="active"
-                    userId={user.id}
-                    value={user.active}
-                  />
+                  <StatusDropdown userId={user.id} status={user.active} />
                 </TableCell>
                 <TableCell>
-                  <StatusDropdown
-                    type="verified"
-                    userId={user.id}
-                    value={user.verified}
-                  />
+                  <StatusDropdown userId={user.id} status={user.verified} />
                 </TableCell>
                 <TableCell>{user.balance}</TableCell>
                 <TableCell>{user.role}</TableCell>

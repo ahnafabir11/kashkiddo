@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import TableToolbar from "../users/table-toolbar";
-import PaymentStatusDropdown from "./payment-status-dropdown";
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
+import TableToolbar from "@/components/table-toolbar";
+import PaymentStatusDropdown from "./payment-status-dropdown";
 
 export default async function page({
   searchParams,
@@ -22,6 +22,7 @@ export default async function page({
   if (session.user.role !== "ADMIN") notFound();
 
   const payments = await prisma.payment.findMany({
+    orderBy: { createdAt: "desc" },
     include: { user: true },
     where: {
       OR: [

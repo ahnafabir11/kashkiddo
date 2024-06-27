@@ -1,17 +1,17 @@
 import {
   Table,
-  TableBody,
+  TableRow,
   TableCell,
   TableHead,
+  TableBody,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import TableToolbar from "../users/table-toolbar";
-import StatusDropdown from "../users/status-dropdown";
-import ActivationStatusDropdown from "./activation-status-dropdown";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
+import TableToolbar from "@/components/table-toolbar";
+import ActiveStatusDropdown from "../users/active-status-dropdown";
+import ActiveRequestStatusDropdownProps from "./active-request-status-dropdown";
 
 export default async function page({
   searchParams,
@@ -72,16 +72,15 @@ export default async function page({
                   <small>{request.user.referredBy?.referredBy.id}</small>
                 </TableCell>
                 <TableCell>
-                  <StatusDropdown
-                    type="active"
+                  <ActiveStatusDropdown
                     userId={request.userId}
-                    value={request.user.active}
+                    status={request.user.active}
                   />
                 </TableCell>
                 <TableCell>
-                  <ActivationStatusDropdown
+                  <ActiveRequestStatusDropdownProps
                     requestId={request.id}
-                    value={request.complete}
+                    status={request.complete}
                   />
                 </TableCell>
               </TableRow>

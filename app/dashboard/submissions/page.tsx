@@ -1,15 +1,15 @@
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import SubmissionStatusDropdown from "./submission-status-dropdown";
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
+import SubmissionStatusDropdown from "./submission-status-dropdown";
 
 export default async function page() {
   const session = await auth();
@@ -17,6 +17,7 @@ export default async function page() {
   if (session.user.role !== "ADMIN") notFound();
 
   const submissions = await prisma.submittedTask.findMany({
+    orderBy: { createdAt: "desc" },
     include: { user: true, task: true },
   });
 

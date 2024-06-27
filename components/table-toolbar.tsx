@@ -1,9 +1,10 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { useDebounce } from "@/lib/hooks/useDebounce";
-import { usePathname } from "next/navigation";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { usePathname } from "next/navigation";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 export default function TableToolbar() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function TableToolbar() {
     } else {
       router.push(`${pathname}?search=${debouncedSearchString}`);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchString]);
 
   return (
