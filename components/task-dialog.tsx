@@ -19,7 +19,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import * as React from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,8 +36,8 @@ export interface TaskDialogProps {
 }
 
 export default function TaskDialog({ className }: TaskDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const form = useForm<TaskFormType>({
     resolver: zodResolver(taskFromSchema),
@@ -44,10 +45,21 @@ export default function TaskDialog({ className }: TaskDialogProps) {
 
   async function onSubmit(values: TaskFormType) {
     setLoading(true);
-    await createNewTask(values);
-    form.reset();
-    setOpen(false);
-    setLoading(false);
+
+    toast.promise(createNewTask(values), {
+      loading: "Creating New Task",
+      success: (data) => {
+        form.reset();
+        setOpen(false);
+        return data.message;
+      },
+      error: (data) => {
+        return data.message;
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   }
 
   return (

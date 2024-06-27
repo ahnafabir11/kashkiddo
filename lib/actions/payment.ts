@@ -7,7 +7,7 @@ import {
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { getServerActionError } from "@/lib/handle-error";
+import { getServerActionError } from "@/lib/handle-server-error";
 import { PaymentStatusDropdownProps } from "@/app/dashboard/payments/payment-status-dropdown";
 
 export async function updatePaymentStatus({

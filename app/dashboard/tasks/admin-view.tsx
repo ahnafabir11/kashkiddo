@@ -1,6 +1,6 @@
+import prisma from "@/lib/db";
 import TaskCard from "@/components/task-card";
 import TaskDialog from "@/components/task-dialog";
-import prisma from "@/lib/db";
 
 export default async function AdminView() {
   const tasks = await prisma.task.findMany({ orderBy: { deadline: "desc" } });

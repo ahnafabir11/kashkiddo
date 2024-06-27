@@ -1,6 +1,6 @@
-import TaskCard from "@/components/task-card";
 import prisma from "@/lib/db";
 import { startOfToday } from "date-fns";
+import TaskCard from "@/components/task-card";
 
 export default async function UserView() {
   const tasks = await prisma.task.findMany({

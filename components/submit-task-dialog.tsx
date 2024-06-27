@@ -36,13 +36,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUploadFile } from "@/lib/hooks/use-upload-file";
 
 interface SubmitTaskDialogProps {
-  userId: string;
   taskId: string;
   className?: string;
 }
 
 export default function SubmitTaskDialog({
-  userId,
   taskId,
   className,
 }: SubmitTaskDialogProps) {
@@ -61,24 +59,26 @@ export default function SubmitTaskDialog({
     setLoading(true);
 
     toast.promise(uploadFiles(values.screenshots), {
-      loading: "Submitting task...",
-      success: async (uploadedFiles) => {
-        if (!uploadedFiles) return;
-        const screenshots = uploadedFiles.map(({ url }) => url);
-        await submitTask(
-          { description: values.description, screenshots },
-          taskId,
-          userId
-        );
+      loading: "Submitting Task",
+      success: async (data) => {
+        if (!data) return;
+        const screenshots = data.map(({ url }) => url);
+
+        await submitTask(taskId, {
+          screenshots,
+          description: values.description,
+        });
+
         form.reset();
         setOpen(false);
-        setLoading(false);
         fireworks();
-        return "Task Submitted";
+        return "Task Submitted Successfully";
       },
-      error: (err) => {
+      error: (data) => {
+        return getErrorMessage(data);
+      },
+      finally: () => {
         setLoading(false);
-        return getErrorMessage(err);
       },
     });
   }

@@ -1,7 +1,7 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface TaskSubmissionProps {
   screenshots: string[];

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import AdminView from "./admin-view";
 import UserView from "./user-view";
+import AdminView from "./admin-view";
+import { redirect } from "next/navigation";
 
 export default async function page() {
   const session = await auth();

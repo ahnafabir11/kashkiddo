@@ -1,18 +1,18 @@
-import CopyToClipboardButton from "@/components/copy-to-clipboard-button";
-import SubmitTaskDialog from "@/components/submit-task-dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import prisma from "@/lib/db";
-import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import prisma from "@/lib/db";
+import Image from "next/image";
+import { auth } from "@/lib/auth";
+import { ChevronLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import TaskSubmission from "./task-submission";
+import { Button } from "@/components/ui/button";
 import { notFound, redirect } from "next/navigation";
 import TaskActionDropdown from "./task-action-dropdown";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { auth } from "@/lib/auth";
-import TaskSubmission from "./task-submission";
 import TaskSubmissionAlert from "./task-submission-alert";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import SubmitTaskDialog from "@/components/submit-task-dialog";
+import CopyToClipboardButton from "@/components/copy-to-clipboard-button";
 
 export default async function page({ params }: { params: { taskId: string } }) {
   const session = await auth();
@@ -37,7 +37,7 @@ export default async function page({ params }: { params: { taskId: string } }) {
           </Link>
         </Button>
 
-        {session.user.role === "ADMIN" && (
+        {user?.role === "ADMIN" && (
           <TaskActionDropdown taskId={task.id} className="shrink-0" />
         )}
       </div>
@@ -45,9 +45,9 @@ export default async function page({ params }: { params: { taskId: string } }) {
       <AspectRatio ratio={3 / 1} className="bg-muted relative">
         <Image
           fill
-          src={task.cover ?? "/images/task-cover.jpeg"}
           alt="Photo by Drew Beamer"
           className="rounded-md object-cover"
+          src={task.cover || "/images/task-cover.jpeg"}
         />
 
         {submission && (
@@ -71,8 +71,8 @@ export default async function page({ params }: { params: { taskId: string } }) {
       <div className="flex items-center gap-2">
         <Input value={task.url} readOnly />
         <CopyToClipboardButton
-          tooltip="URL"
           text={task.url}
+          tooltip="Copy URL"
           className="shrink-0"
         />
       </div>
@@ -85,11 +85,7 @@ export default async function page({ params }: { params: { taskId: string } }) {
           screenshots={submission.screenshots}
         />
       ) : (
-        <SubmitTaskDialog
-          taskId={task.id}
-          userId={user.id || ""}
-          className="w-full sm:w-auto"
-        />
+        <SubmitTaskDialog taskId={task.id} className="w-full sm:w-auto" />
       )}
     </div>
   );

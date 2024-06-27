@@ -52,7 +52,7 @@ export default async function page() {
               </TableCell>
               <TableCell>
                 <SubmissionStatusDropdown
-                  value={submission.status}
+                  status={submission.status}
                   userId={submission.userId}
                   taskId={submission.taskId}
                   submissionId={submission.id}

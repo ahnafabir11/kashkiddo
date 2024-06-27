@@ -1,52 +1,69 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
-import { updateSubmissionStatus } from "@/lib/actions/task";
+import * as React from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { TaskSubmissionStatus } from "@prisma/client";
+import { updateSubmissionStatus } from "@/lib/actions/task";
 
 interface SubmissionStatusDropdownProps {
   userId: string;
   taskId: string;
   submissionId: string;
-  value: TaskSubmissionStatus;
+  status: TaskSubmissionStatus;
 }
 
 export default function SubmissionStatusDropdown({
-  value,
+  status,
   userId,
   taskId,
   submissionId,
 }: SubmissionStatusDropdownProps) {
+  const [loading, setLoading] = React.useState(false);
+
+  const handleUpdateStatus = (updatedStatus: TaskSubmissionStatus) => {
+    setLoading(true);
+
+    toast.promise(
+      updateSubmissionStatus(userId, taskId, submissionId, updatedStatus),
+      {
+        loading: "Updating Submission Status",
+        success: (data) => {
+          return data.message;
+        },
+        error: (data) => {
+          return data.message;
+        },
+        finally: () => {
+          setLoading(false);
+        },
+      }
+    );
+  };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="p-0 h-auto">
-          <Badge
-            className="uppercase"
-            variant={value === "PENDING" ? "secondary" : "default"}
-          >
-            {value}
-          </Badge>
-        </Button>
+      <DropdownMenuTrigger disabled={loading}>
+        <Badge
+          className="uppercase"
+          variant={status === "PENDING" ? "secondary" : "default"}
+        >
+          {status}
+        </Badge>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
         <DropdownMenuRadioGroup
-          value={value.toString()}
-          onValueChange={(updatedValue) =>
-            updateSubmissionStatus(
-              userId,
-              taskId,
-              submissionId,
-              updatedValue as TaskSubmissionStatus
-            )
+          value={status.toString()}
+          onValueChange={(status) =>
+            handleUpdateStatus(status as TaskSubmissionStatus)
           }
         >
           <DropdownMenuRadioItem value="PENDING">PENDING</DropdownMenuRadioItem>

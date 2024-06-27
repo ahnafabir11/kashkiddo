@@ -15,7 +15,7 @@ import { hashPassword } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { referralBonus } from "@/lib/constants";
 import { auth, signIn, signOut } from "@/lib/auth";
-import { getServerActionError } from "@/lib/handle-error";
+import { getServerActionError } from "@/lib/handle-server-error";
 import { ActiveStatusDropdownProps } from "@/app/dashboard/users/active-status-dropdown";
 import { ActiveRequestStatusDropdownProps } from "@/app/dashboard/activations/active-request-status-dropdown";
 

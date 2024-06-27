@@ -1,56 +1,80 @@
 "use server";
 
-import prisma from "../db";
 import {
   TaskFormType,
   taskFromSchema,
   TaskSubmissionServerType,
   taskSubmissionServerSchema,
-} from "../validations/tasks";
+} from "@/lib/validations/tasks";
+import prisma from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { TaskSubmissionStatus } from "@prisma/client";
+import { getServerActionError } from "@/lib/handle-server-error";
 
 export async function createNewTask(data: TaskFormType) {
-  const result = taskFromSchema.safeParse(data);
+  try {
+    const session = await auth();
+    if (!session || !session.user || session.user.role !== "ADMIN") {
+      throw new Error("Unauthorized");
+    }
 
-  if (result.error) {
-    const errors = result.error.flatten().fieldErrors;
-    return { success: false, errors };
+    const result = await taskFromSchema.parseAsync(data);
+
+    await prisma.task.create({ data: result });
+
+    revalidatePath("/dashboard/tasks");
+
+    return { success: true, message: "Task Created Successfully" };
+  } catch (error) {
+    throw getServerActionError(error);
   }
-
-  await prisma.task.create({ data: result.data });
-
-  revalidatePath("/dashboard/tasks");
-  return { success: true };
 }
 
 export async function deleteTask(taskId: string) {
-  await prisma.task.delete({ where: { id: taskId } });
+  try {
+    const session = await auth();
+    if (!session || !session.user || session.user.role !== "ADMIN") {
+      throw new Error("Unauthorized");
+    }
 
-  revalidatePath("/dashboard/tasks");
+    await prisma.task.delete({ where: { id: taskId } });
+
+    revalidatePath("/dashboard/tasks");
+
+    return { success: true, message: "Task Deleted Successfully" };
+  } catch (error) {
+    throw getServerActionError(error);
+  }
 }
 
 export async function submitTask(
-  data: TaskSubmissionServerType,
   taskId: string,
-  userId: string
+  data: TaskSubmissionServerType
 ) {
-  const result = taskSubmissionServerSchema.safeParse(data);
+  try {
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+      throw new Error("Unauthorized");
+    }
 
-  if (result.error) {
-    const errors = result.error.flatten().fieldErrors;
-    return { success: false, errors };
+    const result = await taskSubmissionServerSchema.parseAsync(data);
+
+    await prisma.submittedTask.create({
+      data: {
+        ...result,
+        task: { connect: { id: taskId } },
+        user: { connect: { id: session.user.id } },
+      },
+    });
+
+    revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard/tasks/" + taskId);
+
+    return { success: true, message: "Task Submitted Successfully" };
+  } catch (error) {
+    throw getServerActionError(error);
   }
-
-  await prisma.submittedTask.create({
-    data: {
-      ...result.data,
-      user: { connect: { id: userId } },
-      task: { connect: { id: taskId } },
-    },
-  });
-  revalidatePath("/dashboard/tasks");
-  revalidatePath("/dashboard/tasks/" + taskId);
 }
 
 export async function updateSubmissionStatus(
@@ -59,41 +83,50 @@ export async function updateSubmissionStatus(
   submissionId: string,
   value: TaskSubmissionStatus
 ) {
-  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  try {
+    const session = await auth();
+    if (!session || !session.user || session.user.role !== "ADMIN") {
+      throw new Error("Unauthorized");
+    }
 
-  if (!task) return;
-
-  const submission = await prisma.submittedTask.findUnique({
-    where: { id: submissionId },
-  });
-
-  if (!submission) return;
-
-  await prisma.submittedTask.update({
-    where: { id: submissionId },
-    data: { status: value },
-  });
-
-  if (
-    value === "COMPLETED" &&
-    submission.createdAt.getTime() === submission.updatedAt.getTime()
-  ) {
-    await prisma.tansaction.create({
-      data: {
-        type: "INCOME",
-        reason: "TASK",
-        amount: task.amount,
-        user: { connect: { id: userId } },
-      },
+    const submission = await prisma.submittedTask.findUniqueOrThrow({
+      where: { id: submissionId },
     });
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { balance: { increment: task.amount } },
+    await prisma.submittedTask.update({
+      where: { id: submissionId },
+      data: { status: value },
     });
+
+    if (
+      value === "COMPLETED" &&
+      submission.createdAt.getTime() === submission.updatedAt.getTime()
+    ) {
+      const task = await prisma.task.findUniqueOrThrow({
+        where: { id: taskId },
+      });
+
+      await prisma.tansaction.create({
+        data: {
+          type: "INCOME",
+          reason: "TASK",
+          amount: task.amount,
+          user: { connect: { id: userId } },
+        },
+      });
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: { balance: { increment: task.amount } },
+      });
+    }
+
+    revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard/submissions");
+    revalidatePath("/dashboard/tasks/" + taskId);
+
+    return { success: true, message: "Submission Status Updated" };
+  } catch (error) {
+    throw getServerActionError(error);
   }
-
-  revalidatePath("/dashboard/tasks");
-  revalidatePath("/dashboard/submissions");
-  revalidatePath("/dashboard/tasks/" + taskId);
 }

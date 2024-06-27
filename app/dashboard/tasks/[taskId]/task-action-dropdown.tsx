@@ -1,15 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
-import { deleteTask } from "@/lib/actions/task";
-import { EllipsisVertical, Pencil, Trash } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { deleteTask } from "@/lib/actions/task";
+import { Button } from "@/components/ui/button";
+import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 
 interface TaskActionDropdownProps {
   taskId: string;
@@ -21,16 +24,30 @@ export default function TaskActionDropdown({
   className,
 }: TaskActionDropdownProps) {
   const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDeleteTask() {
-    await deleteTask(taskId);
-    router.push("/dashboard/tasks");
+    setLoading(false);
+
+    toast.promise(deleteTask(taskId), {
+      loading: "Deleting Task",
+      success: (data) => {
+        router.push("/dashboard/tasks");
+        return data.message;
+      },
+      error: (data) => {
+        return data.message;
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={className}>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" disabled={loading}>
           <EllipsisVertical className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
