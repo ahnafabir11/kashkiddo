@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Form,
   FormItem,
@@ -7,16 +8,16 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PasswordInput } from "@/components/ui/password-input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signupFormSchema, SignupFormType } from "@/lib/validations/auth";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { signupNewUser } from "@/lib/actions/user";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PasswordInput } from "@/components/ui/password-input";
+import { signupFormSchema, SignupFormType } from "@/lib/validations/auth";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -29,16 +30,21 @@ export default function SignupForm() {
 
   async function onSubmit(values: SignupFormType) {
     setLoading(true);
-    const loadingToastId = toast.loading("Loading...");
-    const { success, message } = await signupNewUser(values);
-    setLoading(false);
-    toast.dismiss(loadingToastId);
-    if (success) {
-      toast.success(message);
-      router.push("/login");
-    } else {
-      toast.error(message);
-    }
+    
+    toast.promise(signupNewUser(values), {
+      loading: "Creating New Account",
+      success: (data) => {
+        form.reset();
+        router.push("/login");
+        return data.message;
+      },
+      error: (data) => {
+        return data.message;
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   }
 
   return (

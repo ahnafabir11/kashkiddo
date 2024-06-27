@@ -1,14 +1,9 @@
-import { Wallet } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import ActiveAccountCard from "../active-account-card";
-import SideNavLinks from "./side-nav-links";
-import { auth } from "@/lib/auth";
+import { Wallet } from "lucide-react";
+import ActiveAccountCard from "@/components/active-account-card";
+import SideNavLinks from "@/components/layout/side-nav-links";
 
-export default async function MainSideNav() {
-  const session = await auth();
-  if (!session || !session.user || !session.user.id) redirect("/login");
-
+export default function MainSideNav() {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
@@ -22,11 +17,12 @@ export default async function MainSideNav() {
           </Link>
         </div>
 
-        <SideNavLinks role={session.user.role} />
+        <div className="flex-1 overflow-auto">
+          <SideNavLinks className="px-2 lg:px-4" />
+        </div>
 
         <div className="mt-auto p-4">
           <ActiveAccountCard
-            userId={session.user.id}
             headerClassName="p-2 pt-0 md:p-4"
             contentClassName="p-2 pt-0 md:p-4 md:pt-0"
           />

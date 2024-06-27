@@ -1,39 +1,17 @@
-"use client";
-import { cn, getNavLinks } from "@/lib/utils";
-import { Role } from "@prisma/client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import prisma from "@/lib/db";
+import { auth } from "@/lib/auth";
+import SideNavLinksClient from "./side-nav-links-client";
 
-interface SideNavLinksProps {
-  role: Role;
+interface SideNavLinks {
   className?: string;
 }
 
-export default function SideNavLinks({ role, className }: SideNavLinksProps) {
-  const pathname = usePathname();
-  const navLinks = getNavLinks(role);
+export default async function SideNavLinks({ className }: SideNavLinks) {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) return null;
 
-  return (
-    <div className={cn("flex-1 overflow-auto", className)}>
-      <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-        {navLinks.map((link) => {
-          const Icon = link.icon;
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user) return null;
 
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all overflow-hidden hover:text-primary",
-                { "bg-muted text-primary": link.href === pathname }
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{link.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
-  );
+  return <SideNavLinksClient role={user.role} className={className} />;
 }

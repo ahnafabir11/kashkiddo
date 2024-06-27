@@ -1,4 +1,3 @@
-"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,34 +7,24 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { CircleUser, Info, LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
+import prisma from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import LogoutDropdownMenuItem from "./logout-dropdown-menu-item";
+import { CircleUser, Info, LogOut, Settings, User } from "lucide-react";
 
-interface HeaderDropdownProps {
-  email: string;
-  balance: number;
-}
+export default async function HeaderDropdown() {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) return null;
 
-export default function HeaderDropdown({
-  email,
-  balance,
-}: HeaderDropdownProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="secondary"
-          disabled={loading}
-          className="rounded-full"
-        >
+        <Button size="icon" variant="secondary" className="rounded-full">
           <CircleUser className="h-5 w-5" />
           <span className="sr-only">Toggle user menu</span>
         </Button>
@@ -44,9 +33,9 @@ export default function HeaderDropdown({
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{email}</p>
+            <p className="text-sm font-medium leading-none">{user.email}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {balance} TK
+              {user.balance} TK
             </p>
           </div>
         </DropdownMenuLabel>
@@ -72,19 +61,12 @@ export default function HeaderDropdown({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={async () => {
-            setLoading(true);
-            await signOut();
-            setLoading(false);
-            router.push("/login");
-          }}
-        >
+        <LogoutDropdownMenuItem>
           Logout
           <DropdownMenuShortcut>
             <LogOut className="h-4 w-4" />
           </DropdownMenuShortcut>
-        </DropdownMenuItem>
+        </LogoutDropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Form,
   FormItem,
@@ -8,16 +9,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PasswordInput } from "@/components/ui/password-input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { credentialsSignin } from "@/lib/actions/user";
+import { PasswordInput } from "@/components/ui/password-input";
 import { loginFormSchema, LoginFormType } from "@/lib/validations/auth";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -31,19 +32,20 @@ export default function LoginForm() {
   async function onSubmit(values: LoginFormType) {
     setLoading(true);
 
-    const response = await signIn("credentials", {
-      ...values,
-      redirect: false,
+    toast.promise(credentialsSignin(values), {
+      loading: "Log-ining User",
+      success: (data) => {
+        form.reset();
+        router.push("/dashboard");
+        return data.message;
+      },
+      error: () => {
+        return "Invalid Data Provided";
+      },
+      finally: () => {
+        setLoading(false);
+      },
     });
-
-    setLoading(false);
-
-    if (response?.error) {
-      toast.error("Invalid credentials");
-    } else {
-      router.push("/dashboard");
-      router.refresh();
-    }
   }
 
   return (

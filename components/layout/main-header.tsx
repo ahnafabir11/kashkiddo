@@ -1,23 +1,12 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import NavSheet from "./nav-sheet";
 import { Wallet } from "lucide-react";
-import { redirect } from "next/navigation";
-import HeaderDropdown from "./header-dropdown";
-import ActiveAccountCard from "../active-account-card";
-import prisma from "@/lib/db";
+import NavSheet from "@/components/layout/nav-sheet";
+import HeaderDropdown from "@/components/layout/header-dropdown";
 
-export default async function MainHeader() {
-  const session = await auth();
-  if (!session || !session.user || !session.user.id) redirect("/login");
-
-  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-
+export default function MainHeader() {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-      <NavSheet className="md:hidden" role={session.user.role}>
-        <ActiveAccountCard userId={session.user.id} />
-      </NavSheet>
+      <NavSheet className="md:hidden" />
 
       <div className="w-full flex-1">
         <Link
@@ -29,10 +18,7 @@ export default async function MainHeader() {
         </Link>
       </div>
 
-      <HeaderDropdown
-        balance={user?.balance || 0}
-        email={user?.email || "username@gmail.com"}
-      />
+      <HeaderDropdown />
     </header>
   );
 }
