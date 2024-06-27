@@ -1,10 +1,10 @@
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -65,7 +65,7 @@ export default async function page({
                 <TableCell>
                   <PaymentStatusDropdown
                     paymentId={payment.id}
-                    value={payment.complete}
+                    status={payment.complete}
                   />
                 </TableCell>
                 <TableCell>{payment.createdAt.toDateString()}</TableCell>

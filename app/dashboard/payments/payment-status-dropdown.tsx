@@ -1,41 +1,60 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
-import { handleUpdatePaymentStatus } from "@/lib/actions/payment";
+import * as React from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { updatePaymentStatus } from "@/lib/actions/payment";
 
 export interface PaymentStatusDropdownProps {
-  value: boolean;
+  status: boolean;
   paymentId: string;
 }
 
 export default function PaymentStatusDropdown({
-  value,
+  status,
   paymentId,
 }: PaymentStatusDropdownProps) {
+  const [loading, setLoading] = React.useState(false);
+
+  const handleUpdateStatus = () => {
+    setLoading(true);
+
+    toast.promise(updatePaymentStatus({ status, paymentId }), {
+      loading: "Upadating Payment Status",
+      success: (data) => {
+        return data.message;
+      },
+      error: (data) => {
+        return data.message;
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
+  };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="p-0 h-auto">
-          <Badge
-            className="uppercase"
-            variant={value ? "outline" : "destructive"}
-          >
-            {value.toString()}
-          </Badge>
-        </Button>
+      <DropdownMenuTrigger disabled={loading}>
+        <Badge
+          className="uppercase"
+          variant={status ? "outline" : "destructive"}
+        >
+          {status.toString()}
+        </Badge>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
         <DropdownMenuRadioGroup
-          value={value.toString()}
-          onValueChange={() => handleUpdatePaymentStatus({ value, paymentId })}
+          value={status.toString()}
+          onValueChange={handleUpdateStatus}
         >
           <DropdownMenuRadioItem value="true">True</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="false">False</DropdownMenuRadioItem>

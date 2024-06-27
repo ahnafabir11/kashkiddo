@@ -6,13 +6,16 @@ import {
   loginFormSchema,
   signupFormSchema,
 } from "@/lib/validations/auth";
+import {
+  ActiveAccountFormType,
+  activeAccountFormSchema,
+} from "@/lib/validations/account";
 import prisma from "@/lib/db";
 import { hashPassword } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { referralBonus } from "@/lib/constants";
 import { auth, signIn, signOut } from "@/lib/auth";
 import { getServerActionError } from "@/lib/handle-error";
-import { ActiveAccountFormType } from "@/lib/validations/account";
 import { ActiveStatusDropdownProps } from "@/app/dashboard/users/active-status-dropdown";
 import { ActiveRequestStatusDropdownProps } from "@/app/dashboard/activations/active-request-status-dropdown";
 
@@ -95,8 +98,10 @@ export async function createActivationRequest(data: ActiveAccountFormType) {
       throw new Error("Unauthorized");
     }
 
+    const result = await activeAccountFormSchema.parseAsync(data);
+
     await prisma.activation.create({
-      data: { user: { connect: { id: session.user.id } }, ...data },
+      data: { user: { connect: { id: session.user.id } }, ...result },
     });
 
     revalidatePath("/dashboard/activations");

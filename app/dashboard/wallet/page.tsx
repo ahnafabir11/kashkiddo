@@ -1,23 +1,23 @@
-import AnalyticsCard from "@/components/analytics-card";
-import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import { Badge } from "@/components/ui/badge";
-import WithdrawRequestDialog from "@/components/withdraw-request-dialog";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import AnalyticsCard from "@/components/analytics-card";
 import { lastDayOfMonth, startOfMonth } from "date-fns";
+import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import WithdrawRequestDialog from "@/components/withdraw-request-dialog";
 
 export default async function page() {
   const session = await auth();
-  if (!session || !session.user) redirect("/login");
+  if (!session || !session.user || !session.user.id) redirect("/login");
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
 
@@ -78,8 +78,7 @@ export default async function page() {
       <div className="flex justify-end mb-4">
         <WithdrawRequestDialog
           className="w-full sm:w-auto"
-          userId={session.user.id || ""}
-          balance={user?.balance ?? 0}
+          balance={user?.balance || 0}
           withdrawCount={withdrawRequests.length}
         />
       </div>

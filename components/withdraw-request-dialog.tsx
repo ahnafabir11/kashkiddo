@@ -25,7 +25,7 @@ import {
   withdrawFormSchema,
 } from "@/lib/validations/account";
 import { toast } from "sonner";
-import { useState } from "react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { fireworks } from "@/lib/confetti";
 import { Input } from "@/components/ui/input";
@@ -35,20 +35,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createWithdrawRequest } from "@/lib/actions/payment";
 
 export interface WithdrawRequestDialogProps {
-  userId: string;
   balance: number;
   className?: string;
   withdrawCount: number;
 }
 
 export default function WithdrawRequestDialog({
-  userId,
   balance,
   className,
   withdrawCount,
 }: WithdrawRequestDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const form = useForm<WithdrawFormType>({
     resolver: zodResolver(withdrawFormSchema),
@@ -66,11 +64,22 @@ export default function WithdrawRequestDialog({
     }
 
     setLoading(true);
-    await createWithdrawRequest(userId, values);
-    form.reset();
-    setOpen(false);
-    setLoading(false);
-    fireworks();
+
+    toast.promise(createWithdrawRequest(values), {
+      loading: "Sending Withdraw Request",
+      success: (data) => {
+        form.reset();
+        setOpen(false);
+        fireworks();
+        return data.message;
+      },
+      error: (data) => {
+        return data.message;
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   }
 
   return (
