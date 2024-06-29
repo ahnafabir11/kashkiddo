@@ -7,9 +7,9 @@ import {
 } from "@prisma/client/runtime/library";
 import { z } from "zod";
 
-export function getServerActionError(error: unknown): Error {
+export function getServerActionError(error: unknown) {
   if (error instanceof z.ZodError) {
-    return new Error("Invalid Data Provided", { cause: "Zod" });
+    return { success: false, message: "Invalid Data Provided" };
   }
 
   if (
@@ -19,12 +19,19 @@ export function getServerActionError(error: unknown): Error {
     error instanceof PrismaClientInitializationError ||
     error instanceof PrismaClientUnknownRequestError
   ) {
-    return new Error("Internal Server Error", { cause: "Prisma" });
+    return { success: false, message: "Internal Server Error" };
   }
 
   if (error instanceof Error) {
-    return new Error(error.message, { cause: "Client" });
+    // checking is error from Next-Auth
+    if (error.cause && error.cause.hasOwnProperty("provider")) {
+      return { success: false, message: "Invalid Data Provided" };
+    }
+
+    // returning custom error message
+    // thrown in server actions
+    return { success: false, message: error.message };
   }
 
-  return new Error("Something Went Wrong", { cause: "Unknown" });
+  return { success: false, message: "Something Went Wrong" };
 }

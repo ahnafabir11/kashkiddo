@@ -31,8 +31,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { activationCharge } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { handleServerAction } from "@/lib/handle-error";
 import { createActivationRequest } from "@/lib/actions/user";
-import { toast } from "sonner";
 
 interface ActiveAccountDialogProps {
   submitted: boolean;
@@ -53,16 +53,12 @@ export default function ActiveAccountDialog({
   async function onSubmit(values: ActiveAccountFormType) {
     setLoading(true);
 
-    toast.promise(createActivationRequest(values), {
+    await handleServerAction(createActivationRequest(values), {
       loading: "Sending Activation Request",
-      success: (data) => {
+      success: () => {
         form.reset();
         setOpen(false);
         fireworks();
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
       },
       finally: () => {
         setLoading(false);

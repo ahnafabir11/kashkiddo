@@ -9,7 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { toast } from "sonner";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { credentialsSignin } from "@/lib/actions/user";
+import { handleServerAction } from "@/lib/handle-error";
 import { PasswordInput } from "@/components/ui/password-input";
 import { loginFormSchema, LoginFormType } from "@/lib/validations/auth";
 
@@ -32,15 +32,11 @@ export default function LoginForm() {
   async function onSubmit(values: LoginFormType) {
     setLoading(true);
 
-    toast.promise(credentialsSignin(values), {
+    await handleServerAction(credentialsSignin(values), {
       loading: "Log-ining User",
-      success: (data) => {
+      success: () => {
         form.reset();
         router.push("/dashboard");
-        return data.message;
-      },
-      error: () => {
-        return "Invalid Data Provided";
       },
       finally: () => {
         setLoading(false);

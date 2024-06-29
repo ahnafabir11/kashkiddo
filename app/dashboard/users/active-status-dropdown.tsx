@@ -8,8 +8,8 @@ import {
   DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
 import * as React from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { handleServerAction } from "@/lib/handle-error";
 import { updateUserActiveStatus } from "@/lib/actions/user";
 
 export interface ActiveStatusDropdownProps {
@@ -23,17 +23,11 @@ export default function ActiveStatusDropdown({
 }: ActiveStatusDropdownProps) {
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = async () => {
     setLoading(true);
 
-    toast.promise(updateUserActiveStatus({ status, userId }), {
+    await handleServerAction(updateUserActiveStatus({ status, userId }), {
       loading: "Updating User Active Status",
-      success: (data) => {
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
-      },
       finally: () => {
         setLoading(false);
       },

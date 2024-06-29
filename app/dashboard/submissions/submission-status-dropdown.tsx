@@ -8,9 +8,9 @@ import {
   DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
 import * as React from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { TaskSubmissionStatus } from "@prisma/client";
+import { handleServerAction } from "@/lib/handle-error";
 import { updateSubmissionStatus } from "@/lib/actions/task";
 
 interface SubmissionStatusDropdownProps {
@@ -28,19 +28,13 @@ export default function SubmissionStatusDropdown({
 }: SubmissionStatusDropdownProps) {
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpdateStatus = (updatedStatus: TaskSubmissionStatus) => {
+  const handleUpdateStatus = async (updatedStatus: TaskSubmissionStatus) => {
     setLoading(true);
 
-    toast.promise(
+    await handleServerAction(
       updateSubmissionStatus(userId, taskId, submissionId, updatedStatus),
       {
         loading: "Updating Submission Status",
-        success: (data) => {
-          return data.message;
-        },
-        error: (data) => {
-          return data.message;
-        },
         finally: () => {
           setLoading(false);
         },

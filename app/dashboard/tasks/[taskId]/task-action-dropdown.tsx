@@ -8,10 +8,10 @@ import {
   DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import * as React from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteTask } from "@/lib/actions/task";
 import { Button } from "@/components/ui/button";
+import { handleServerAction } from "@/lib/handle-error";
 import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 
 interface TaskActionDropdownProps {
@@ -29,14 +29,10 @@ export default function TaskActionDropdown({
   async function handleDeleteTask() {
     setLoading(false);
 
-    toast.promise(deleteTask(taskId), {
+    await handleServerAction(deleteTask(taskId), {
       loading: "Deleting Task",
-      success: (data) => {
+      success: () => {
         router.push("/dashboard/tasks");
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
       },
       finally: () => {
         setLoading(false);

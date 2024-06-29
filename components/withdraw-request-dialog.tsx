@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { minWithdrawAmmount } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { handleServerAction } from "@/lib/handle-error";
 import { createWithdrawRequest } from "@/lib/actions/payment";
 
 export interface WithdrawRequestDialogProps {
@@ -65,16 +66,12 @@ export default function WithdrawRequestDialog({
 
     setLoading(true);
 
-    toast.promise(createWithdrawRequest(values), {
+    await handleServerAction(createWithdrawRequest(values), {
       loading: "Sending Withdraw Request",
-      success: (data) => {
+      success: () => {
         form.reset();
         setOpen(false);
         fireworks();
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
       },
       finally: () => {
         setLoading(false);

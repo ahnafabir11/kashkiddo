@@ -27,7 +27,7 @@ export async function createNewTask(data: TaskFormType) {
 
     return { success: true, message: "Task Created Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -44,7 +44,7 @@ export async function deleteTask(taskId: string) {
 
     return { success: true, message: "Task Deleted Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -73,7 +73,7 @@ export async function submitTask(
 
     return { success: true, message: "Task Submitted Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -127,6 +127,6 @@ export async function updateSubmissionStatus(
 
     return { success: true, message: "Submission Status Updated" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }

@@ -8,8 +8,8 @@ import {
   DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
 import * as React from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { handleServerAction } from "@/lib/handle-error";
 import { updatePaymentStatus } from "@/lib/actions/payment";
 
 export interface PaymentStatusDropdownProps {
@@ -23,17 +23,11 @@ export default function PaymentStatusDropdown({
 }: PaymentStatusDropdownProps) {
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = async () => {
     setLoading(true);
 
-    toast.promise(updatePaymentStatus({ status, paymentId }), {
+    await handleServerAction(updatePaymentStatus({ status, paymentId }), {
       loading: "Upadating Payment Status",
-      success: (data) => {
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
-      },
       finally: () => {
         setLoading(false);
       },

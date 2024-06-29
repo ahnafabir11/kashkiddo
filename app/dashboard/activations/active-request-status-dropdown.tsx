@@ -8,8 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import * as React from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { handleServerAction } from "@/lib/handle-error";
 import { updateActiveRequestStatus } from "@/lib/actions/user";
 
 export interface ActiveRequestStatusDropdownProps {
@@ -23,17 +23,11 @@ export default function ActiveRequestStatusDropdown({
 }: ActiveRequestStatusDropdownProps) {
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = async () => {
     setLoading(true);
 
-    toast.promise(updateActiveRequestStatus({ status, requestId }), {
+    await handleServerAction(updateActiveRequestStatus({ status, requestId }), {
       loading: "Updating Active Request Status",
-      success: (data) => {
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
-      },
       finally: () => {
         setLoading(false);
       },

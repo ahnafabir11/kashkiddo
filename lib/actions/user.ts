@@ -65,7 +65,7 @@ export async function signupNewUser(data: SignupFormType) {
 
     return { success: true, message: "Account Created Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -77,7 +77,7 @@ export async function credentialsSignin(data: LoginFormType) {
 
     return { success: true, message: "User Logged In Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -87,7 +87,7 @@ export async function signoutUser() {
 
     return { success: true, message: "User Signed Out Successfully" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -106,9 +106,9 @@ export async function createActivationRequest(data: ActiveAccountFormType) {
 
     revalidatePath("/dashboard/activations");
 
-    return { success: false, message: "Activation Request Sent" };
+    return { success: true, message: "Activation Request Sent" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -153,7 +153,7 @@ export async function updateUserActiveStatus({
 
     return { success: true, message: "User Active Status Updated" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -176,6 +176,6 @@ export async function updateActiveRequestStatus({
 
     return { success: true, message: "Active Request Status Updated" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }

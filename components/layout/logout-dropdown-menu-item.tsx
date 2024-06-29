@@ -1,8 +1,8 @@
 "use client";
 import * as React from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signoutUser } from "@/lib/actions/user";
+import { handleServerAction } from "@/lib/handle-error";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function LogoutDropdownMenuItem({
@@ -14,14 +14,10 @@ export default function LogoutDropdownMenuItem({
   async function handleLogout() {
     setLoading(true);
 
-    toast.promise(signoutUser, {
+    await handleServerAction(signoutUser(), {
       loading: "Loging Out User",
-      success: (data) => {
+      success: () => {
         router.push("/login");
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
       },
       finally: () => {
         setLoading(false);

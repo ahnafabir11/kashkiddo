@@ -29,7 +29,7 @@ export async function updatePaymentStatus({
 
     return { success: true, message: "Payment Status Updated" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }
 
@@ -64,6 +64,6 @@ export async function createWithdrawRequest(data: WithdrawFormType) {
 
     return { success: true, message: "Withdraw Request Sent" };
   } catch (error) {
-    throw getServerActionError(error);
+    return getServerActionError(error);
   }
 }

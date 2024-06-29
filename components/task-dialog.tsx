@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import * as React from "react";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ import { createNewTask } from "@/lib/actions/task";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { handleServerAction } from "@/lib/handle-error";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TaskFormType, taskFromSchema } from "@/lib/validations/tasks";
 
@@ -46,15 +46,11 @@ export default function TaskDialog({ className }: TaskDialogProps) {
   async function onSubmit(values: TaskFormType) {
     setLoading(true);
 
-    toast.promise(createNewTask(values), {
+    await handleServerAction(createNewTask(values), {
       loading: "Creating New Task",
-      success: (data) => {
+      success: () => {
         form.reset();
         setOpen(false);
-        return data.message;
-      },
-      error: (data) => {
-        return data.message;
       },
       finally: () => {
         setLoading(false);
