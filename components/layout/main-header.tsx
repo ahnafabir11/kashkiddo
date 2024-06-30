@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Wallet } from "lucide-react";
 import NavSheet from "@/components/layout/nav-sheet";
+import HeaderDropDownSkeleton from "./header-dropdown-skeleton";
 import HeaderDropdown from "@/components/layout/header-dropdown";
 
 export default function MainHeader() {
@@ -18,7 +20,9 @@ export default function MainHeader() {
         </Link>
       </div>
 
-      <HeaderDropdown />
+      <Suspense fallback={<HeaderDropDownSkeleton />}>
+        <HeaderDropdown />
+      </Suspense>
     </header>
   );
 }

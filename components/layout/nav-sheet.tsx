@@ -1,11 +1,19 @@
+import {
+  Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { PropsWithChildren } from "react";
 import { Menu, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PropsWithChildren, Suspense } from "react";
+import { Separator } from "@/components/ui/separator";
+import SideNavLinkSkeleton from "./side-nav-links-skeleton";
 import SideNavLinks from "@/components/layout/side-nav-links";
 import ActiveAccountCard from "@/components/active-account-card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import ActiveAccountCardSkeleton from "./active-account-card-skeleton";
 
 interface NavSheetProps extends PropsWithChildren {
   className?: string;
@@ -25,21 +33,29 @@ export default function NavSheet({ className }: NavSheetProps) {
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="flex flex-col">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 text-lg font-semibold mb-8"
-        >
-          <Wallet className="h-6 w-6" />
-          <span>KashKiddo</span>
-        </Link>
+      <SheetContent side="left" className="flex flex-col p-4">
+        <SheetHeader>
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-lg font-semibold"
+          >
+            <Wallet className="h-6 w-6" />
+            <span>KashKiddo</span>
+          </Link>
+        </SheetHeader>
+
+        <Separator />
 
         <div className="flex-1 overflow-auto">
-          <SideNavLinks />
+          <Suspense fallback={<SideNavLinkSkeleton />}>
+            <SideNavLinks />
+          </Suspense>
         </div>
 
         <div className="mt-auto">
-          <ActiveAccountCard />
+          <Suspense fallback={<ActiveAccountCardSkeleton />}>
+            <ActiveAccountCard />
+          </Suspense>
         </div>
       </SheetContent>
     </Sheet>
