@@ -27,7 +27,7 @@ export default async function page() {
         <TableHeader>
           <TableRow>
             <TableHead rowSpan={2}>Task</TableHead>
-            <TableHead colSpan={5}>Submission Details</TableHead>
+            <TableHead colSpan={6}>Submission Details</TableHead>
           </TableRow>
           <TableRow>
             <TableHead>Name</TableHead>
