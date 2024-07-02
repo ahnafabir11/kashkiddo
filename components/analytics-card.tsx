@@ -1,12 +1,12 @@
 import { LucideProps } from "lucide-react";
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { ForwardRefExoticComponent, ReactNode, RefAttributes } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AnalyticsCardProps {
   label: string;
   className?: string;
   description: string;
-  amount: string | number;
+  amount: string | number | ReactNode;
   Icon: ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   >;
