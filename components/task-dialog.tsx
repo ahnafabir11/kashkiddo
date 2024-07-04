@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import * as React from "react";
+import { addHours } from "date-fns";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -46,16 +47,19 @@ export default function TaskDialog({ className }: TaskDialogProps) {
   async function onSubmit(values: TaskFormType) {
     setLoading(true);
 
-    await handleServerAction(createNewTask(values), {
-      loading: "Creating New Task",
-      success: () => {
-        form.reset();
-        setOpen(false);
-      },
-      finally: () => {
-        setLoading(false);
-      },
-    });
+    await handleServerAction(
+      createNewTask({ ...values, deadline: addHours(values.deadline, 6) }),
+      {
+        loading: "Creating New Task",
+        success: () => {
+          form.reset();
+          setOpen(false);
+        },
+        finally: () => {
+          setLoading(false);
+        },
+      }
+    );
   }
 
   return (
