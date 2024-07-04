@@ -1,3 +1,5 @@
+// Opt out of caching for all data requests in the route segment
+export const dynamic = "force-dynamic";
 import prisma from "@/lib/db";
 import { startOfToday } from "date-fns";
 
