@@ -1,10 +1,10 @@
 "use client";
 
-import { startOfToday } from "date-fns";
-
 export default function Client() {
-  console.log("JS Date", new Date());
-  console.log("SNF Start Today", startOfToday());
-
-  return <div>client</div>;
+  return (
+    <div>
+      <h1 className="text-xl">client</h1>
+      {new Date().toString()}
+    </div>
+  );
 }
