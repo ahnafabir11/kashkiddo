@@ -1,20 +1,21 @@
-import { cn } from "@/lib/utils";
-import { Calendar, Coins } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { AspectRatio } from "./ui/aspect-ratio";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import {
   Card,
-  CardDescription,
+  CardTitle,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "./ui/card";
+  CardDescription,
+} from "@/components/ui/card";
+import Link from "next/link";
 import prisma from "@/lib/db";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
+import { format } from "date-fns";
 import { redirect } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Coins } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface TaskCardProps {
   id: string;
@@ -78,7 +79,7 @@ export default async function TaskCard({
             </div>
             <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="mr-1 h-4 w-4" />
-              {deadline.toLocaleDateString()}
+              {format(deadline, "dd/MM/yyyy")}
             </div>
           </div>
 
