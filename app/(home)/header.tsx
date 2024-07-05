@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default async function Header() {
   const session = await auth();
@@ -34,6 +35,7 @@ export default async function Header() {
                 </Button>
               </>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </div>

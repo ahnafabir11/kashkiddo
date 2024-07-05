@@ -11,6 +11,7 @@ import Link from "next/link";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import ThemeDropdownMenuItem from "./theme-dropdown-menu-item";
 import LogoutDropdownMenuItem from "./logout-dropdown-menu-item";
 import { CircleUser, Info, LogOut, Settings, User } from "lucide-react";
 
@@ -60,6 +61,7 @@ export default async function HeaderDropdown() {
             </DropdownMenuShortcut>
           </Link>
         </DropdownMenuItem>
+        <ThemeDropdownMenuItem>Theme</ThemeDropdownMenuItem>
         <DropdownMenuSeparator />
         <LogoutDropdownMenuItem>
           Logout
