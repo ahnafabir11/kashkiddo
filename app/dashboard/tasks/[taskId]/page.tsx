@@ -64,9 +64,10 @@ export default async function page({ params }: { params: { taskId: string } }) {
         {task.title}
       </h3>
 
-      <p className="leading-7 [&:not(:first-child)]:mt-6 whitespace-pre-wrap">
-        {task.description}
-      </p>
+      <div
+        className="prose dark:prose-invert"
+        dangerouslySetInnerHTML={{ __html: task.description }}
+      />
 
       <div className="flex items-center gap-2">
         <Input value={task.url} readOnly />

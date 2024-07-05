@@ -25,9 +25,9 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createNewTask } from "@/lib/actions/task";
-import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { MinimalTiptapEditor } from "./minimal-tiptap";
 import { handleServerAction } from "@/lib/handle-error";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TaskFormType, taskFromSchema } from "@/lib/validations/tasks";
@@ -68,7 +68,7 @@ export default function TaskDialog({ className }: TaskDialogProps) {
         <Button className={className}>Create New Task</Button>
       </CredenzaTrigger>
 
-      <CredenzaContent className="md:max-w-[425px]">
+      <CredenzaContent className="md:max-w-lg">
         <CredenzaHeader>
           <CredenzaTitle>Add New Task</CredenzaTitle>
           <CredenzaDescription>
@@ -109,9 +109,10 @@ export default function TaskDialog({ className }: TaskDialogProps) {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea
-                          placeholder="How the task is supposed to be completed..."
+                        <MinimalTiptapEditor
                           {...field}
+                          className="w-full"
+                          onValueChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />
