@@ -47,7 +47,13 @@ export default function SubmissionStatusDropdown({
       <DropdownMenuTrigger disabled={loading}>
         <Badge
           className="uppercase"
-          variant={status === "PENDING" ? "secondary" : "default"}
+          variant={
+            status === "PENDING"
+              ? "secondary"
+              : status === "REJECTED"
+              ? "destructive"
+              : "default"
+          }
         >
           {status}
         </Badge>
@@ -63,6 +69,9 @@ export default function SubmissionStatusDropdown({
           <DropdownMenuRadioItem value="PENDING">PENDING</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="COMPLETED">
             COMPLETED
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="REJECTED">
+            REJECTED
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

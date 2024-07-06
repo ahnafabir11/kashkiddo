@@ -53,7 +53,13 @@ export default async function page({ params }: { params: { taskId: string } }) {
         {submission && (
           <Badge
             className="absolute right-2 top-2"
-            variant={submission.status === "PENDING" ? "secondary" : "default"}
+            variant={
+              submission.status === "PENDING"
+                ? "secondary"
+                : submission.status === "REJECTED"
+                ? "destructive"
+                : "default"
+            }
           >
             {submission.status}
           </Badge>

@@ -30,6 +30,7 @@ enum TransactionReason {
 enum TaskSubmissionStatus {
   PENDING
   COMPLETED
+  REJECTED
 }
 
 model User {
