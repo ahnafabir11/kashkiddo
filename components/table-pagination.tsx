@@ -7,13 +7,15 @@ import {
   PaginationContent,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
+import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { pagination as generatePagination } from "@/lib/utils";
 
 interface TablePaginationProps {
+  page: number; 
   total: number;
-  page: number;
   perPage: number;
+  baseUrl?: string;
 }
 
 const desktop = "(min-width: 768px)";
@@ -22,7 +24,9 @@ export default function TablePagination({
   page,
   total,
   perPage,
+  baseUrl,
 }: TablePaginationProps) {
+  const pathname = usePathname();
   const isDesktop = useMediaQuery(desktop);
 
   const totalPage = Math.ceil(total / perPage);
@@ -31,8 +35,9 @@ export default function TablePagination({
   const getPaginationArr = generatePagination(paginationItemCount);
   const pagination = getPaginationArr(page, totalPage);
 
+  const BASE_URL = baseUrl ?? pathname;
   const getUrl = (page: number, perPage: number) =>
-    `/dashboard/submissions?page=${page}&per_page=${perPage}`;
+    `${BASE_URL}?page=${page}&per_page=${perPage}`;
 
   return (
     <Pagination>
