@@ -8,21 +8,37 @@ import {
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import ReferButton from "@/components/refer-button";
-import TableToolbar from "@/components/table-toolbar";
+import TablePagination from "@/components/table-pagination";
 
-export default async function AdminView({
+export default async function AdminReferralTable({
+  page,
+  perPage,
   searchString,
-  referredById,
 }: {
+  page: number;
+  perPage: number;
   searchString: string;
-  referredById: string;
 }) {
+  const referralCount = await prisma.referral.count({
+    where: {
+      OR: [
+        { referredBy: { id: { contains: searchString } } },
+        { referredBy: { name: { contains: searchString } } },
+        { referredBy: { email: { contains: searchString } } },
+        { referredTo: { id: { contains: searchString } } },
+        { referredTo: { name: { contains: searchString } } },
+        { referredTo: { email: { contains: searchString } } },
+      ],
+    },
+  });
+
   const referrals = await prisma.referral.findMany({
+    take: perPage,
+    skip: (page - 1) * perPage,
+    orderBy: { createdAt: "desc" },
     include: { referredBy: true, referredTo: true },
     where: {
       OR: [
-        { id: { contains: searchString } },
         { referredBy: { id: { contains: searchString } } },
         { referredBy: { name: { contains: searchString } } },
         { referredBy: { email: { contains: searchString } } },
@@ -34,12 +50,7 @@ export default async function AdminView({
   });
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
-        <TableToolbar />
-        <ReferButton referCode={referredById} />
-      </div>
-
+    <>
       <div className="rounded-md border">
         <Table className="whitespace-nowrap">
           <TableHeader>
@@ -47,7 +58,6 @@ export default async function AdminView({
               <TableHead colSpan={3}>Referred By</TableHead>
               <TableHead colSpan={3}>Referred To</TableHead>
             </TableRow>
-
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
@@ -57,7 +67,6 @@ export default async function AdminView({
               <TableHead>Active</TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
             {referrals.map((referral) => (
               <TableRow key={referral.id}>
@@ -74,7 +83,6 @@ export default async function AdminView({
                     {referral.referredBy.active.toString()}
                   </Badge>
                 </TableCell>
-
                 <TableCell>
                   <p>{referral.referredTo.name}</p>
                   <small>{referral.referredTo.id}</small>
@@ -93,6 +101,8 @@ export default async function AdminView({
           </TableBody>
         </Table>
       </div>
-    </div>
+
+      <TablePagination total={referralCount} page={page} perPage={perPage} />
+    </>
   );
 }

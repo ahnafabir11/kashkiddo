@@ -9,6 +9,7 @@ import {
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
+import TableToolbar from "@/components/table-toolbar";
 import TablePagination from "@/components/table-pagination";
 import { PaginationShchema } from "@/lib/validations/pagination";
 import SubmissionStatusDropdown from "./submission-status-dropdown";
@@ -25,25 +26,44 @@ export default async function page({
     redirect(`/dashboard/submissions?page=${1}&per_page=${10}`);
   }
 
-  const { page, per_page } = result.data;
+  const { page, per_page, search } = result.data;
 
   // Authentication
   const session = await auth();
   if (!session || !session.user) redirect("/login");
   if (session.user.role !== "ADMIN") notFound();
 
-  // Data query
-  const submissionCount = await prisma.submittedTask.count();
+  // Data Queries
+  const submissionCount = await prisma.submittedTask.count({
+    where: {
+      OR: [
+        { user: { id: { contains: search || "", mode: "insensitive" } } },
+        { user: { name: { contains: search || "", mode: "insensitive" } } },
+        { task: { id: { contains: search || "", mode: "insensitive" } } },
+        { task: { title: { contains: search || "", mode: "insensitive" } } },
+      ],
+    },
+  });
 
   const submissions = await prisma.submittedTask.findMany({
     take: per_page,
     skip: (page - 1) * per_page,
     orderBy: { createdAt: "desc" },
     include: { user: true, task: true },
+    where: {
+      OR: [
+        { user: { id: { contains: search || "", mode: "insensitive" } } },
+        { user: { name: { contains: search || "", mode: "insensitive" } } },
+        { task: { id: { contains: search || "", mode: "insensitive" } } },
+        { task: { title: { contains: search || "", mode: "insensitive" } } },
+      ],
+    },
   });
 
   return (
     <div className="space-y-8">
+      <TableToolbar />
+
       <div className="border rounded-md">
         <Table className="whitespace-nowrap">
           <TableHeader>

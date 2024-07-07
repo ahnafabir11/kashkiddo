@@ -11,32 +11,55 @@ import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import StatusDropdown from "./active-status-dropdown";
 import TableToolbar from "@/components/table-toolbar";
+import TablePagination from "@/components/table-pagination";
+import { PaginationShchema } from "@/lib/validations/pagination";
 
 export default async function page({
   searchParams,
 }: {
-  searchParams: { search: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
+  // Submission Table Pagination
+  const result = await PaginationShchema.safeParseAsync(searchParams);
+
+  if (!result.success) {
+    redirect(`/dashboard/users?page=${1}&per_page=${10}`);
+  }
+
+  const { page, per_page, search } = result.data;
+
+  // Athentication
   const session = await auth();
   if (!session || !session.user) redirect("/login");
   if (session.user.role !== "ADMIN") notFound();
 
+  // Data Queries
+  const userCount = await prisma.user.count({
+    where: {
+      OR: [
+        { id: { contains: search || "", mode: "insensitive" } },
+        { name: { contains: search || "", mode: "insensitive" } },
+        { email: { contains: search || "", mode: "insensitive" } },
+      ],
+    },
+  });
+
   const users = await prisma.user.findMany({
+    take: per_page,
+    skip: (page - 1) * per_page,
     orderBy: { createdAt: "desc" },
     where: {
       OR: [
-        { id: { contains: searchParams.search ?? "" } },
-        { name: { contains: searchParams.search ?? "" } },
-        { email: { contains: searchParams.search ?? "" } },
+        { id: { contains: search || "", mode: "insensitive" } },
+        { name: { contains: search || "", mode: "insensitive" } },
+        { email: { contains: search || "", mode: "insensitive" } },
       ],
     },
   });
 
   return (
-    <div>
-      <div className="mb-4">
-        <TableToolbar />
-      </div>
+    <div className="space-y-8">
+      <TableToolbar />
 
       <div className="rounded-md border">
         <Table className="whitespace-nowrap">
@@ -72,6 +95,8 @@ export default async function page({
           </TableBody>
         </Table>
       </div>
+
+      <TablePagination total={userCount} page={page} perPage={per_page} />
     </div>
   );
 }

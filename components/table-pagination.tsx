@@ -7,15 +7,18 @@ import {
   PaginationContent,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { usePathname } from "next/navigation";
+import {
+  createQueryString,
+  pagination as generatePagination,
+} from "@/lib/utils";
+import { useCallback } from "react";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { pagination as generatePagination } from "@/lib/utils";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface TablePaginationProps {
-  page: number; 
+  page: number;
   total: number;
   perPage: number;
-  baseUrl?: string;
 }
 
 const desktop = "(min-width: 768px)";
@@ -24,9 +27,9 @@ export default function TablePagination({
   page,
   total,
   perPage,
-  baseUrl,
 }: TablePaginationProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isDesktop = useMediaQuery(desktop);
 
   const totalPage = Math.ceil(total / perPage);
@@ -35,9 +38,16 @@ export default function TablePagination({
   const getPaginationArr = generatePagination(paginationItemCount);
   const pagination = getPaginationArr(page, totalPage);
 
-  const BASE_URL = baseUrl ?? pathname;
-  const getUrl = (page: number, perPage: number) =>
-    `${BASE_URL}?page=${page}&per_page=${perPage}`;
+  const getQueryString = useCallback(createQueryString, [searchParams]);
+
+  const getUrl = (page: number, perPage: number) => {
+    const queryString = getQueryString(searchParams, {
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+
+    return `${pathname}?${queryString}`;
+  };
 
   return (
     <Pagination>

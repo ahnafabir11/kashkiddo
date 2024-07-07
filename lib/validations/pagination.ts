@@ -13,4 +13,10 @@ export const PaginationShchema = z.object({
       invalid_type_error: "Per page must be a number!",
     })
     .min(1, "Invalid per page number provided"),
+  search: z
+    .string({
+      required_error: "Search params is required!",
+      invalid_type_error: "Search params must be a string!",
+    })
+    .optional(),
 });

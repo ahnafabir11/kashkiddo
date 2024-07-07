@@ -8,17 +8,33 @@ import {
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import ReferButton from "@/components/refer-button";
-import TableToolbar from "@/components/table-toolbar";
+import TablePagination from "@/components/table-pagination";
 
-export default async function UserView({
+export default async function UserReferralTable({
+  page,
+  perPage,
   referredById,
   searchString,
 }: {
+  page: number;
+  perPage: number;
   referredById: string;
   searchString: string;
 }) {
+  const referralCount = await prisma.referral.count({
+    where: {
+      referredById,
+      OR: [
+        { referredTo: { name: { contains: searchString } } },
+        { referredTo: { email: { contains: searchString } } },
+      ],
+    },
+  });
+
   const referrals = await prisma.referral.findMany({
+    take: perPage,
+    skip: (page - 1) * perPage,
+    orderBy: { createdAt: "desc" },
     include: { referredTo: true },
     where: {
       referredById,
@@ -30,12 +46,7 @@ export default async function UserView({
   });
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
-        <TableToolbar />
-        <ReferButton referCode={referredById} />
-      </div>
-
+    <>
       <div className="rounded-md border">
         <Table className="whitespace-nowrap">
           <TableHeader>
@@ -45,7 +56,6 @@ export default async function UserView({
               <TableHead>Active</TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
             {referrals.map((referral) => (
               <TableRow key={referral.id}>
@@ -69,6 +79,8 @@ export default async function UserView({
           </TableBody>
         </Table>
       </div>
-    </div>
+
+      <TablePagination total={referralCount} page={page} perPage={perPage} />
+    </>
   );
 }

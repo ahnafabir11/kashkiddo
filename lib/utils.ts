@@ -2,6 +2,7 @@ import { Role } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { navLinks } from "./constants";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,3 +58,16 @@ export const pagination =
       ...(end < total - 1 ? [ellipsis, total] : end < total ? [total] : []),
     ];
   };
+
+export const createQueryString = (
+  searchParams: ReadonlyURLSearchParams,
+  paramsObject: { [key: string]: string }
+) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  Object.keys(paramsObject).forEach((key) => {
+    params.set(key, paramsObject[key]);
+  });
+
+  return params.toString();
+};
