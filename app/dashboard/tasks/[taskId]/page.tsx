@@ -13,6 +13,8 @@ import TaskSubmissionAlert from "./task-submission-alert";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import SubmitTaskDialog from "@/components/submit-task-dialog";
 import CopyToClipboardButton from "@/components/copy-to-clipboard-button";
+import { isSameDay, isToday, startOfToday } from "date-fns";
+import TaskDeadlineAlert from "./task-deadline-alert";
 
 export default async function page({ params }: { params: { taskId: string } }) {
   const session = await auth();
@@ -86,6 +88,8 @@ export default async function page({ params }: { params: { taskId: string } }) {
 
       {!user?.active ? (
         <TaskSubmissionAlert />
+      ) : !isToday(task.deadline) ? (
+        <TaskDeadlineAlert />
       ) : submission ? (
         <TaskSubmission
           description={submission.description}
