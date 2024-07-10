@@ -88,15 +88,17 @@ export default async function page({ params }: { params: { taskId: string } }) {
 
       {!user?.active ? (
         <TaskSubmissionAlert />
-      ) : !isToday(task.deadline) ? (
-        <TaskDeadlineAlert />
-      ) : submission ? (
+      ) : !submission ? (
+        !isToday(task.deadline) ? (
+          <TaskDeadlineAlert />
+        ) : (
+          <SubmitTaskDialog taskId={task.id} className="w-full sm:w-auto" />
+        )
+      ) : (
         <TaskSubmission
           description={submission.description}
           screenshots={submission.screenshots}
         />
-      ) : (
-        <SubmitTaskDialog taskId={task.id} className="w-full sm:w-auto" />
       )}
     </div>
   );
