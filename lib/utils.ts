@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { navLinks } from "./constants";
+import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export function cn(...inputs: ClassValue[]) {
@@ -71,3 +71,7 @@ export const createQueryString = (
 
   return params.toString();
 };
+
+export function removeTags(htmlString: string) {
+  return htmlString.replace(/(<([^>]+)>)/gi, "");
+}

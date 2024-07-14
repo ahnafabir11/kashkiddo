@@ -8,10 +8,10 @@ import {
 import Link from "next/link";
 import prisma from "@/lib/db";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
+import { cn, removeTags } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default async function TaskCard({
       <CardHeader>
         <CardTitle className="text-lg line-clamp-1">{title}</CardTitle>
         <CardDescription className="text-xs line-clamp-2 min-h-8">
-          {description}
+          {removeTags(description)}
         </CardDescription>
       </CardHeader>
 
